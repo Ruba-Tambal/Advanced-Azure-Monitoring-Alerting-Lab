@@ -13,16 +13,13 @@
 
 # 📋 Lab Objectives
 
-By completing this lab, you will learn how to:
-
-- Deploy a virtual machine
-- Configure Log Analytics Workspace
+- Deploy and monitor a Virtual Machine
 - Enable VM Insights
-- Monitor CPU and performance metrics
-- Create metric alerts
-- Create activity log alerts
+- View metrics directly from VM
+- Create metric alerts from VM
+- Create activity log alerts from Azure Monitor
 - Query logs using KQL
-- Build monitoring dashboards
+- Build dashboards
 
 ---
 
@@ -35,11 +32,9 @@ By completing this lab, you will learn how to:
 
 # 🔹 STEP 2 — Create Virtual Machine
 
-## Configuration
-
 | Setting | Value |
 |---|---|
-| VM Name | `vm-monitor` |
+| Name | `vm-monitor` |
 | Image | Windows Server 2022 Datacenter |
 | Size | Standard B2s |
 | Region | UAE North |
@@ -50,80 +45,95 @@ By completing this lab, you will learn how to:
 
 | Setting | Value |
 |---|---|
-| Workspace Name | `law-contoso-monitor` |
+| Name | `law-contoso-monitor` |
 | Region | UAE North |
 
 ---
 
 # 🔹 STEP 4 — Enable VM Insights
 
-1. Go to the virtual machine (`vm-monitor`)
-2. Open **Insights**
+1. Open the VM: `vm-monitor`
+2. Go to **Insights**
 3. Click **Enable**
-4. Select the **Log Analytics Workspace**
+4. Select workspace:
    - `law-contoso-monitor`
 
 ---
 
 # 🔹 STEP 5 — Generate CPU Load (Testing)
 
-On the VM, open **PowerShell** and run:
+On the VM, open **PowerShell**:
 
 ```powershell
 while ($true) { }
 ```
 
-⚠️ This simulates high CPU usage for monitoring tests.
+⚠️ This creates high CPU load for monitoring tests.
 
 ---
 
-# 🔹 STEP 6 — Explore Metrics
+# 🔹 STEP 6 — Monitor Metrics (FROM VM)
 
-1. Go to **Azure Monitor**
-2. Select **Metrics**
-3. Set scope to:
-   - `vm-monitor`
+1. Go to the VM: `vm-monitor`
+2. In the left menu, select:
+   - **Monitoring → Metrics**
+3. Click **Add metric**
 
-## Add Metrics
+## Add Metrics:
 
 - Percentage CPU
 - Memory Percentage
-- Disk I/O / Requests
+- Disk Read/Write
+
+4. Set time range (Last 1 hour)
+
+📊 You can now visually monitor VM performance directly from the VM blade.
 
 ---
 
-# 🔹 STEP 7 — Create Metric Alert
+# 🔹 STEP 7 — Create Metric Alert (FROM VM)
 
-1. Go to **Azure Monitor → Alerts**
-2. Click **+ Create → Alert rule**
+1. Stay inside the VM: `vm-monitor`
+2. Go to:
+   - **Monitoring → Alerts**
+3. Click **+ Create alert rule**
 
 ## Configuration
 
 | Setting | Value |
 |---|---|
-| Scope | `vm-monitor` |
+| Scope | This VM (`vm-monitor`) |
 | Condition | CPU Percentage > 70% |
 
-3. Create **Action Group**
+4. Create **Action Group**
    - Add email notification
 
-4. Save alert rule
+5. Click **Create alert rule**
+
+📌 This alert is now created directly from the VM resource.
 
 ---
 
-# 🔹 STEP 8 — Create Activity Log Alert
+# 🔹 STEP 8 — Create Activity Log Alert (FROM AZURE MONITOR)
 
-1. Go to **Azure Monitor → Alerts**
-2. Select **Activity Log Alert**
+1. Go to **Azure Monitor**
+2. Open **Alerts**
+3. Click **+ Create → Alert rule**
 
 ## Configuration
 
 | Setting | Value |
 |---|---|
+| Signal type | Activity Log |
 | Event | Virtual Machine Delete |
-| Scope | Subscription / Resource Group |
+| Scope | Subscription or Resource Group |
 
-3. Attach Action Group (Email notification)
+4. Create or select **Action Group**
+   - Email notification
+
+5. Click **Create alert rule**
+
+📌 This ensures monitoring at the Azure platform level (not VM-level).
 
 ---
 
@@ -134,8 +144,9 @@ while ($true) { }
 
 ## KQL Queries
 
-### Heartbeat Logs
-```kql
+### Heartbeat
+
+```kql id="k8q1aa"
 Heartbeat
 | summarize count() by Computer
 ```
@@ -143,7 +154,8 @@ Heartbeat
 ---
 
 ### CPU Performance
-```kql
+
+```kql id="m4x2bb"
 Perf
 | where CounterName == "% Processor Time"
 | summarize avg(CounterValue) by bin(TimeGenerated, 5m)
@@ -153,17 +165,17 @@ Perf
 
 # 🔹 STEP 10 — Create Dashboard
 
-1. Search for **Dashboard**
-2. Click **+ New Dashboard**
+1. Search **Dashboard**
+2. Click **+ New dashboard**
 3. Name it:
    - `Contoso Monitoring Dashboard`
 
 ## Pin Items
 
-- CPU Metrics Chart
-- VM Insights Overview
-- Alerts Status
-- Log Analytics Queries
+- VM CPU Metrics
+- VM Insights
+- Alerts status
+- Log Analytics queries
 
 4. Click **Save**
 
@@ -171,37 +183,23 @@ Perf
 
 # 🎉 Lab Completed Successfully!
 
-## ✅ Skills Learned
+## ✅ Skills Practiced
 
-- Azure Monitor setup
-- Log Analytics configuration
-- VM Insights monitoring
-- Metric alerts creation
-- Activity log alerts
-- KQL log querying
+- VM-level monitoring (Metrics + Alerts)
+- Azure Monitor platform alerts
+- Log Analytics (KQL queries)
+- VM Insights integration
 - Dashboard creation
-
----
-
-# 📌 Real-World Use Cases
-
-This monitoring setup is used in:
-
-- Enterprise IT operations
-- Cloud infrastructure monitoring
-- Security operations (SOC)
-- Performance optimization
-- Incident detection and response
 
 ---
 
 # 🔐 Best Practices
 
-- Enable diagnostics on all production VMs
-- Use multiple alert conditions
-- Avoid infinite CPU test commands in production
-- Set proper retention for logs
-- Use action groups for automation
+- Always create alerts from VM for resource-level monitoring
+- Use Azure Monitor for subscription-wide events
+- Avoid infinite loops in production CPU tests
+- Enable VM Insights for deep diagnostics
+- Centralize logs in Log Analytics Workspace
 
 ---
 ```
